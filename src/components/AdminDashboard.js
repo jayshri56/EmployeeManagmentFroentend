@@ -8,7 +8,6 @@ import EmployeeList from './EmployeeList';
 
 const AdminDashboard = () => {
     const [leaveRequests, setLeaveRequests] = useState([]);
-    const [performanceReviews, setPerformanceReviews] = useState([]);
     const [loading, setLoading] = useState({ leaveRequests: true, performanceReviews: true, analytics: true });
     const [error, setError] = useState({});
     const [showEmployeeSubmenu, setShowEmployeeSubmenu] = useState(false);
@@ -16,8 +15,8 @@ const AdminDashboard = () => {
     const [showForm, setShowForm] = useState(false);
     const [activeSection, setActiveSection] = useState('dashboard');
     const navigate = useNavigate();
-    // const adminEmail = localStorage.getItem('username') || '';
     const [adminName, setAdminName] = useState('');
+
     const [analytics, setAnalytics] = useState({
         totalEmployees: 0,
         pendingLeaveRequests: 0,
@@ -25,46 +24,22 @@ const AdminDashboard = () => {
     });
     const adminEmail = localStorage.getItem('username') || '';
 
-    // Fetch admin details, leave requests, performance reviews, and analytics
     useEffect(() => {
-        // if (adminEmail) {
+        const storedAdminName = localStorage.getItem('adminName');
+        
+        if (storedAdminName) {
+            setAdminName(storedAdminName);
+        } else {
             fetchAdminName();
-        // }
-        // fetchLeaveRequests();
-        // fetchPerformanceReviews();
-        // fetchAnalytics();
+        }
     }, []);
+    
 
-    // // Fetch the admin's name
-    // const fetchAdminName = async () => {
-    //     if (!adminEmail) {
-    //         console.error("Admin email is not found in localStorage.");
-    //         setError((prev) => ({ ...prev, adminName: "Admin email not found." }));
-    //         return;
-    //     }
-
-    //     try {
-    //         const response = await axios.get(
-    //             `http://localhost:8080/api/v1/admin/name?username=${encodeURIComponent(adminEmail)}`,
-    //             {
-    //                 headers: {
-    //                     "Content-Type": "application/json",
-    //                 },
-    //                 withCredentials: true, // Add this if authentication is required
-    //             }
-    //         );
-    //         setAdminName(response.data);
-    //     } catch (err) {
-    //         console.error("Failed to fetch admin name:", err);
-    //         setError((prev) => ({ ...prev, adminName: "Failed to fetch admin name." }));
-    //     }
-    // };
-
-
+  
     const fetchAdminName = async () => {
         if (!adminEmail) {
             console.error("Admin email not found in localStorage.");
-            setError((prev) => ({ ...prev, adminName: "Admin email is missing." }));
+            setError("Admin email is missing.");
             return;
         }
         const storedAdminName = localStorage.getItem('adminName');
@@ -76,7 +51,7 @@ const AdminDashboard = () => {
 
         try {
             const response = await axios.get(
-                `http://localhost:8080/api/v1/admin/name?username=${encodeURIComponent(storedAdminName)}`,
+                `http://localhost:8080/api/v1/admin/name?username=${encodeURIComponent(adminEmail)}`,
                 {
                     headers: { "Content-Type": "application/json" },
                 }
@@ -84,6 +59,7 @@ const AdminDashboard = () => {
            
             setAdminName(response.data); // Set fetched name
             localStorage.setItem('adminName', response.data);  // Store admin name in localStorage
+            localStorage.setItem('username', adminEmail);
 
         } catch (err) {
             console.error("Failed to fetch admin name:", err);
@@ -104,47 +80,9 @@ const AdminDashboard = () => {
     };
 
 
-
-    // // Fetch analytics data
-    // const fetchAnalytics = async () => {
-    //     try {
-    //         const response = await axios.get('http://localhost:8080/api/v1/analytics');
-    //         setAnalytics(response.data);
-    //     } catch (err) {
-    //         setError((prev) => ({ ...prev, analytics: 'Failed to fetch analytics data.' }));
-    //     } finally {
-    //         setLoading((prev) => ({ ...prev, analytics: false }));
-    //     }
-    // };
-
-    // // Fetch leave requests
-    // const fetchLeaveRequests = async () => {
-    //     try {
-    //         const response = await axios.get('http://localhost:8080/api/v1/leave-requests');
-    //         setLeaveRequests(response.data);
-    //     } catch (err) {
-    //         setError((prev) => ({ ...prev, leaveRequests: 'Failed to fetch leave requests.' }));
-    //     } finally {
-    //         setLoading((prev) => ({ ...prev, leaveRequests: false }));
-    //     }
-    // };
-
-    // // Fetch performance reviews
-    // const fetchPerformanceReviews = async () => {
-    //     try {
-    //         const response = await axios.get('http://localhost:8080/api/v1/performance-reviews');
-    //         setPerformanceReviews(response.data);
-    //     } catch (err) {
-    //         setError((prev) => ({ ...prev, performanceReviews: 'Failed to fetch performance reviews.' }));
-    //     } finally {
-    //         setLoading((prev) => ({ ...prev, performanceReviews: false }));
-    //     }
-    // };
-
+   
     // Handle logout
     const handleLogout = () => {
-                localStorage.removeItem('adminName');
-
         localStorage.clear();
         navigate('/');
     };
@@ -161,7 +99,7 @@ const AdminDashboard = () => {
                     <Dropdown.Toggle variant="link" id="dropdown-profile" className="text-light">
                         <div className="d-flex align-items-center">
                             <Image src={adminImage} roundedCircle width={50} height={50} className="me-2" />
-                            <h6 className="mb-0 text-white"> Welcome {adminEmail || 'Admin'}</h6>
+                            <h6 className="mb-0 text-white"> Welcome {adminName || 'Admin'}</h6>
                         </div>
                     </Dropdown.Toggle>
                     <Dropdown.Menu align="end">
@@ -259,3 +197,5 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
+
+

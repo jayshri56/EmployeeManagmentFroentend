@@ -24,56 +24,33 @@ function App() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // useEffect(() => {
-  //   const checkAuth = () => {
-  //     const authToken = localStorage.getItem("authToken");
-  //     const storedUser = localStorage.getItem("username");
-    
-  //     let parsedUser = null;
-  //     try {
-  //       parsedUser = storedUser ? JSON.parse(storedUser) : storedUser;
-  //     } catch (error) {
-  //       console.error("Error parsing user data:", error);
-  //       localStorage.removeItem("username"); // Clear invalid data
-  //     }
-    
-  //     if (authToken && parsedUser) {
-  //       setAuthenticated(true);
-  //       setUser(parsedUser);
-  //     } else {
-  //       setAuthenticated(false);
-  //       setUser(null);
-  //     }
-  //   };
-    
-  
-  //   checkAuth();
-  // }, [authenticated]); // ✅ Runs whenever authenticated state changes
-  
   useEffect(() => {
     const checkAuth = () => {
-        const authToken = localStorage.getItem("authToken");
-        const storedUser = localStorage.getItem("username");
-
-        let parsedUser = null;
-        try {
-            parsedUser = storedUser ? JSON.parse(storedUser) : null;
-        } catch (error) {
-            console.error("Error parsing user data:", error);
-            localStorage.removeItem("username");
-        }
-
-        if (authToken && parsedUser) {
-            setAuthenticated(true);
-            setUser(parsedUser);
-        } else {
-            setAuthenticated(false);
-            setUser(null);
-        }
+      const authToken = localStorage.getItem("authToken");
+      const storedUser = localStorage.getItem("username");
+    
+      let parsedUser = null;
+      try {
+        parsedUser = storedUser ? JSON.parse(storedUser) : storedUser;
+      } catch (error) {
+        console.error("Error parsing user data:", error);
+        localStorage.removeItem("username"); // Clear invalid data
+      }
+    
+      if (authToken && parsedUser) {
+        setAuthenticated(true);
+        setUser(parsedUser);
+      } else {
+        setAuthenticated(false);
+        setUser(null);
+      }
     };
-
+    
+  
     checkAuth();
-}, []); // ✅ Runs only on mount
+  }, [authenticated]); // ✅ Runs whenever authenticated state changes
+  
+ 
 
   const handleLogout = () => {
     localStorage.removeItem("authToken");
